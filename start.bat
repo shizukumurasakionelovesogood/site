@@ -1,5 +1,5 @@
 @echo off
-echo Запуск FileShare...
+echo Запуск AsNodt...
 echo.
 
 REM Проверка наличия Node.js
@@ -74,7 +74,7 @@ echo Открытие веб-страницы...
 start http://localhost:3000
 
 echo.
-echo FileShare успешно запущен!
+echo AsNodt успешно запущен!
 echo Для остановки сервера нажмите Ctrl+C в этом окне.
 echo.
 

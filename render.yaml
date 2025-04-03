@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: fileshare
+    name: asnodt
     env: node
     buildCommand: npm install
     startCommand: node server.js

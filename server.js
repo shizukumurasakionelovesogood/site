@@ -71,10 +71,16 @@ const File = mongoose.model('File', fileSchema);
 // Маршрут для загрузки файлов
 app.post('/upload', upload.single('file'), async (req, res) => {
     try {
+        console.log('Начало загрузки файла');
+        console.log('Request body:', req.body);
+        console.log('Request file:', req.file);
+
         if (!req.file) {
+            console.log('Файл не был получен в запросе');
             return res.status(400).json({ error: 'Файл не был загружен' });
         }
 
+        console.log('Создание записи в базе данных');
         const file = new File({
             filename: req.file.filename,
             originalname: req.file.originalname,
@@ -83,7 +89,10 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             mimetype: req.file.mimetype
         });
 
+        console.log('Сохранение файла в базу данных');
         await file.save();
+        console.log('Файл успешно сохранен в базу данных');
+
         res.json({ 
             message: 'Файл успешно загружен',
             file: {
@@ -91,12 +100,17 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                 name: file.originalname,
                 size: file.size,
                 type: file.mimetype,
-                uploadDate: file.uploadDate
+                uploadDate: file.uploadDate,
+                url: `/uploads/${file.filename}`
             }
         });
     } catch (error) {
-        console.error('Ошибка при загрузке файла:', error);
-        res.status(500).json({ error: 'Ошибка при загрузке файла' });
+        console.error('Подробная ошибка при загрузке файла:', error);
+        console.error('Stack trace:', error.stack);
+        res.status(500).json({ 
+            error: 'Ошибка при загрузке файла',
+            details: error.message 
+        });
     }
 });
 

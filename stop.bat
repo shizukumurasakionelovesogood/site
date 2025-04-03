@@ -1,5 +1,5 @@
 @echo off
-echo Остановка FileShare...
+echo Остановка AsNodt...
 echo.
 
 REM Остановка сервера Node.js
@@ -21,6 +21,6 @@ REM     echo MongoDB не была запущена или уже останов
 REM )
 
 echo.
-echo FileShare полностью остановлен.
+echo AsNodt полностью остановлен.
 echo.
 pause 
