@@ -9,5 +9,5 @@ services:
         sync: false
         description: "MongoDB connection string (will be set in Render dashboard)"
       - key: PORT
-        value: 3000
+        value: 10000
         description: "Port for the web server" 
