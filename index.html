@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileShare - Скачивание файлов</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1>FileShare</h1>
+                <div class="theme-toggle">
+                    <input type="checkbox" id="theme-toggle" class="theme-toggle-input">
+                    <label for="theme-toggle" class="theme-toggle-label">
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-moon"></i>
+                    </label>
+                </div>
+            </div>
+            <p>Безопасное скачивание файлов</p>
+        </header>
+
+        <main>
+            <div class="categories-section">
+                <h2>Категории</h2>
+                <div class="categories">
+                    <button class="category-btn active" data-category="all">
+                        <i class="fas fa-th-large"></i> Все файлы
+                    </button>
+                    <button class="category-btn" data-category="images">
+                        <i class="fas fa-image"></i> Изображения
+                    </button>
+                    <button class="category-btn" data-category="documents">
+                        <i class="fas fa-file-alt"></i> Документы
+                    </button>
+                    <button class="category-btn" data-category="audio">
+                        <i class="fas fa-music"></i> Аудио
+                    </button>
+                    <button class="category-btn" data-category="video">
+                        <i class="fas fa-video"></i> Видео
+                    </button>
+                    <button class="category-btn" data-category="archives">
+                        <i class="fas fa-file-archive"></i> Архивы
+                    </button>
+                </div>
+            </div>
+
+            <div class="upload-section">
+                <div class="upload-box" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h2>Перетащите файлы сюда</h2>
+                    <p>или</p>
+                    <label for="fileInput" class="upload-btn">Выберите файлы</label>
+                    <input type="file" id="fileInput" multiple hidden>
+                </div>
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <p class="progress-text">Загрузка: <span id="progressPercent">0%</span></p>
+                </div>
+            </div>
+
+            <div class="files-section">
+                <div class="files-header">
+                    <h2>Доступные файлы</h2>
+                    <div class="files-controls">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Поиск файлов...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="sort-box">
+                            <select id="sortSelect">
+                                <option value="date-desc">Сначала новые</option>
+                                <option value="date-asc">Сначала старые</option>
+                                <option value="name-asc">По имени (А-Я)</option>
+                                <option value="name-desc">По имени (Я-А)</option>
+                                <option value="size-desc">По размеру (большие)</option>
+                                <option value="size-asc">По размеру (малые)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="files-grid" id="filesGrid">
+                    <!-- Файлы будут добавляться здесь динамически -->
+                </div>
+                <div class="no-files" id="noFiles" style="display: none;">
+                    <i class="fas fa-folder-open"></i>
+                    <p>Файлы не найдены</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 FileShare. Все права защищены.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
