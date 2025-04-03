@@ -16,30 +16,40 @@ app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
 // Настройка раздачи статических файлов
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname)));
 
 // Создаем директорию для загрузок, если она не существует
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
 
-// Настройка Multer для загрузки файлов
+// Настройка multer для загрузки файлов
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 50 * 1024 * 1024 // 50MB максимум
+    }
+});
 
 // Подключение к MongoDB
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/fileshare';
 mongoose.connect(mongoURI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    retryWrites: true,
+    w: 'majority',
+    ssl: true,
+    authSource: 'admin'
 }).then(() => {
     console.log('Connected to MongoDB');
 }).catch(err => {
@@ -49,39 +59,43 @@ mongoose.connect(mongoURI, {
 // Схема для файлов
 const fileSchema = new mongoose.Schema({
     filename: String,
-    originalName: String,
+    originalname: String,
     path: String,
     size: Number,
+    mimetype: String,
     uploadDate: { type: Date, default: Date.now }
 });
 
 const File = mongoose.model('File', fileSchema);
 
-// Маршруты API
-app.post('/api/upload', upload.single('file'), async (req, res) => {
+// Маршрут для загрузки файлов
+app.post('/upload', upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ error: 'Файл не загружен' });
+            return res.status(400).json({ error: 'Файл не был загружен' });
         }
 
         const file = new File({
             filename: req.file.filename,
-            originalName: req.file.originalname,
+            originalname: req.file.originalname,
             path: req.file.path,
-            size: req.file.size
+            size: req.file.size,
+            mimetype: req.file.mimetype
         });
 
         await file.save();
-        res.json({
+        res.json({ 
             message: 'Файл успешно загружен',
             file: {
                 id: file._id,
-                name: file.originalName,
+                name: file.originalname,
                 size: file.size,
-                url: `/uploads/${file.filename}`
+                type: file.mimetype,
+                uploadDate: file.uploadDate
             }
         });
     } catch (error) {
+        console.error('Ошибка при загрузке файла:', error);
         res.status(500).json({ error: 'Ошибка при загрузке файла' });
     }
 });
@@ -91,7 +105,7 @@ app.get('/api/files', async (req, res) => {
         const files = await File.find().sort({ uploadDate: -1 });
         res.json(files.map(file => ({
             id: file._id,
-            name: file.originalName,
+            name: file.originalname,
             size: file.size,
             url: `/uploads/${file.filename}`,
             uploadDate: file.uploadDate
